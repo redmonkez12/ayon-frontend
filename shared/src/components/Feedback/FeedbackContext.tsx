@@ -12,6 +12,7 @@ export type FeedbackContextType = {
   openSupport: (
     page?: 'Home' | 'Messages' | 'Changelog' | 'Help' | 'NewMessage' | 'ShowArticle',
     id?: string,
+    closeManually?: boolean,
   ) => void
   messengerLoaded: boolean // whether the messenger widget is loaded
   unreadCount: number // number of unread messages
@@ -332,7 +333,7 @@ export const FeedbackProvider: React.FC<FeedbackProviderProps> = ({ children }) 
     }
   }, [scriptLoaded, messengerLoaded])
 
-  const openSupport: FeedbackContextType['openSupport'] = (page = 'Home', id) => {
+  const openSupport: FeedbackContextType['openSupport'] = (page = 'Home', id, closeManually = false) => {
     const win = window as any
     if (typeof win.Featurebase !== 'function') {
       window.alert('Featurebase SDK is not loaded yet. Please try again later.')
@@ -340,7 +341,7 @@ export const FeedbackProvider: React.FC<FeedbackProviderProps> = ({ children }) 
       return
     }
 
-    if (messengerVisibility) {
+    if (messengerVisibility && !closeManually) {
       //  if the messenger is already visible, close it
       win.Featurebase('hide')
       setMessengerVisibility(false)
